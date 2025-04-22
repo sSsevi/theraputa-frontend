@@ -19,7 +19,7 @@ export default function MadameSpillApp() {
     setLoading(true);
     setAnswer(null);
     setThinkingStage(0);
-
+  
     const thinkingInterval = setInterval(() => {
       setThinkingStage((prev) => {
         if (prev < thinkingMessages.length - 1) return prev + 1;
@@ -27,14 +27,16 @@ export default function MadameSpillApp() {
         return prev;
       });
     }, 1500);
-
+  
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ask`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
+  
       const data = await res.json();
+  
       let output = data.answer;
       output = output
         .replace(/\bαγαπητή μου\b/gi, "αγάπη μου")
@@ -44,13 +46,16 @@ export default function MadameSpillApp() {
         .replace(/\bαγαπητέ\b/gi, "καλέ")
         .replace(/\bαγαπητή\b/gi, "καλέ")
         .replace(/\bαγαπη\w*/gi, "αγάπη μου");
+  
       setAnswer(output);
     } catch (err) {
+      console.error("Fetch failed:", err);
       setAnswer("🧿 Κάτι πήγε στραβά. Ξαναρώτα με πριν σε πάρω με τις φλυτζανιές.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-4 space-y-4">
